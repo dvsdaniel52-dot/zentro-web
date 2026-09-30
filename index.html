@@ -296,8 +296,8 @@
     <div class="days" role="group" aria-label="Día de la semana" id="days"></div>
     <div class="sched" id="sched" aria-live="polite"></div>
     <div class="sched-foot">
-      <a class="btn solid" href="APP_URL" target="_blank" rel="noopener">Reserva en la app</a>
-      <p>Las reservas se hacen desde la app de Zentro. Si todavía no eres miembro, empieza por tu InBody.</p>
+      <a class="btn solid" href="BOOK_URL" target="_blank" rel="noopener">Reservar clase</a>
+      <p>Si todavía no eres miembro, empieza por tu InBody. Muy pronto también reservas desde la app de Zentro.</p>
     </div>
   </div>
 </section>
@@ -441,7 +441,7 @@
     <div class="faq">
       <details><summary>Nunca he entrenado o estoy fuera de forma, ¿puedo?</summary><p>Sí. Cada ejercicio se escala a tu nivel desde el primer día. No tienes que estar en forma para entrenar; entrenas para estar en forma.</p></details>
       <details><summary>¿Qué es el InBody y por qué es gratis?</summary><p>Es un análisis de composición corporal: grasa, músculo, agua y grasa visceral, con balance por segmento. Es gratis porque es la forma honesta de saber si podemos ayudarte y cómo. Toma unos 15 minutos y te lo explicamos en persona.</p></details>
-      <details><summary>¿Cómo reservo mi clase?</summary><p>Desde la app de Zentro. Entras con tu celular, eliges la clase y te llega tu código QR para el check-in. El cupo es limitado para que el coach pueda atenderte.</p></details>
+      <details><summary>¿Cómo reservo mi clase?</summary><p>Con el botón Reservar de esta página. Muy pronto lo harás desde la app de Zentro: entras con tu celular, eliges la clase y te llega tu código QR para el check-in. El cupo es limitado para que el coach pueda atenderte.</p></details>
       <details><summary>¿Cómo funciona la garantía del Reto?</summary><p>Si completas las 6 semanas asistiendo 3 veces por semana, vas a todos los pesajes y haces tu InBody del día uno, y no bajas 5 kg, te devolvemos tu dinero.</p></details>
       <details><summary>¿Qué clase me conviene para empezar?</summary><p>Functional Training es la base y hay clases todos los días. Si te gusta competir contigo mismo, prueba Hyrox. Tu coach te recomienda después de tu InBody.</p></details>
     </div>
@@ -478,7 +478,10 @@
 <script>
   // Horario en vivo desde la app de Zentro
   const APP = "https://zentro-app-production.up.railway.app";
+  // Durante la transición las reservas siguen en SimplyBook; el día de la invitación a la app se cambia a APP
+  const BOOK = "https://kamegym.simplybook.me/v2/#book";
   document.querySelectorAll('a[href^="APP_URL"]').forEach(a=>{ a.href = APP + a.getAttribute("href").slice(7); });
+  document.querySelectorAll('a[href="BOOK_URL"]').forEach(a=>{ a.href = BOOK; });
   const DOW = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
   const daysEl = document.getElementById("days"), schedEl = document.getElementById("sched");
   const esc = s => String(s ?? "").replace(/[&<>"]/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
@@ -490,7 +493,7 @@
     const d = DAYS[i];
     if (!d.classes.length) { schedEl.innerHTML = `<div class="srow"><span class="t">—</span><span class="c"><b>${d.holiday ? esc(d.holiday) : "Sin clases este día"}</b></span></div>`; return; }
     schedEl.innerHTML = (d.holiday ? `<div class="srow"><span class="t">★</span><span class="c"><b>${esc(d.holiday)}</b><span>Horario de día festivo</span></span></div>` : "") +
-      d.classes.map(c=>`<div class="srow"><span class="t">${fmt(c.time)}<small>${ampm(c.time)}</small></span><span class="c"><b>${esc(c.class_type)}</b><span>${c.coach ? "Coach " + esc(c.coach) : "Coach por asignar"}${c.free ? "" : " · Llena"}</span></span><a class="res" href="${APP}" target="_blank" rel="noopener">Reservar</a></div>`).join("");
+      d.classes.map(c=>`<div class="srow"><span class="t">${fmt(c.time)}<small>${ampm(c.time)}</small></span><span class="c"><b>${esc(c.class_type)}</b><span>${c.coach ? "Coach " + esc(c.coach) : "Coach por asignar"}${c.free ? "" : " · Llena"}</span></span><a class="res" href="${BOOK}" target="_blank" rel="noopener">Reservar</a></div>`).join("");
   }
   fetch(APP + "/api/public/schedule?days=7").then(r => r.ok ? r.json() : Promise.reject(r.status)).then(data => {
     // sin domingos y sin las clases de hoy que ya empezaron
