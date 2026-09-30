@@ -490,12 +490,18 @@
     const d = DAYS[i];
     if (!d.classes.length) { schedEl.innerHTML = `<div class="srow"><span class="t">—</span><span class="c"><b>${d.holiday ? esc(d.holiday) : "Sin clases este día"}</b></span></div>`; return; }
     schedEl.innerHTML = (d.holiday ? `<div class="srow"><span class="t">★</span><span class="c"><b>${esc(d.holiday)}</b><span>Horario de día festivo</span></span></div>` : "") +
-      d.classes.map(c=>`<div class="srow"><span class="t">${fmt(c.time)}<small>${ampm(c.time)}</small></span><span class="c"><b>${esc(c.class_type)}</b><span>${c.coach ? "Coach " + esc(c.coach) : "Coach por asignar"} · ${c.free ? c.free + (c.free === 1 ? " lugar" : " lugares") : "Llena"}</span></span><a class="res" href="${APP}" target="_blank" rel="noopener">Reservar</a></div>`).join("");
+      d.classes.map(c=>`<div class="srow"><span class="t">${fmt(c.time)}<small>${ampm(c.time)}</small></span><span class="c"><b>${esc(c.class_type)}</b><span>${c.coach ? "Coach " + esc(c.coach) : "Coach por asignar"}${c.free ? "" : " · Llena"}</span></span><a class="res" href="${APP}" target="_blank" rel="noopener">Reservar</a></div>`).join("");
   }
   fetch(APP + "/api/public/schedule?days=7").then(r => r.ok ? r.json() : Promise.reject(r.status)).then(data => {
-    DAYS = data.days.filter(d => new Date(d.day + "T12:00").getDay() !== 0);
+    // sin domingos y sin las clases de hoy que ya empezaron
+    const now = new Date(), today = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,"0") + "-" + String(now.getDate()).padStart(2,"0");
+    const hhmm = String(now.getHours()).padStart(2,"0") + ":" + String(now.getMinutes()).padStart(2,"0");
+    DAYS = data.days.filter(d => new Date(d.day + "T12:00").getDay() !== 0)
+      .map(d => d.day === today ? {...d, classes: d.classes.filter(c => c.time > hhmm)} : d)
+      .filter(d => d.classes.length || d.holiday);
+    const todayIdx = 0;
     if (!DAYS.length) throw 0;
-    daysEl.innerHTML = DAYS.map((d,i) => { const dt = new Date(d.day + "T12:00"); return `<button type="button" id="day${i}"><b>${dt.getDate()}</b><span>${i===0 && d.day===new Date().toISOString().slice(0,10) ? "Hoy" : DOW[dt.getDay()]}</span></button>`; }).join("");
+    daysEl.innerHTML = DAYS.map((d,i) => { const dt = new Date(d.day + "T12:00"); return `<button type="button" id="day${i}"><b>${dt.getDate()}</b><span>${d.day===today ? "Hoy" : DOW[dt.getDay()]}</span></button>`; }).join("");
     [...daysEl.children].forEach((b,i) => b.addEventListener("click", () => show(i)));
     show(0);
   }).catch(() => {
