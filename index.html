@@ -477,7 +477,7 @@
 
 <script>
   // Horario en vivo desde la app de Zentro
-  const APP = "https://zentro-app-production.up.railway.app";
+  const APP = "https://app.zentrocf.com";
   // Durante la transición las reservas siguen en SimplyBook; el día de la invitación a la app se cambia a APP
   const BOOK = "https://kamegym.simplybook.me/v2/#book";
   document.querySelectorAll('a[href^="APP_URL"]').forEach(a=>{ a.href = APP + a.getAttribute("href").slice(7); });
