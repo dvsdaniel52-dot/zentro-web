@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Zentro Community Fitness</title>
 <script>
-  // Ligas viejas de reservas (zentrocf.com/v2/...) siguen yendo a SimplyBook durante la transición
+  // Ligas viejas de reservas (zentrocf.com/v2/... de SimplyBook) van a la App Zentro desde su lanzamiento (8-oct-2026)
   var p = location.pathname;
-  if (p.indexOf("/v2") === 0) location.replace("https://kamegym.simplybook.me" + p + location.search + location.hash);
+  if (p.indexOf("/v2") === 0) location.replace("https://app.zentrocf.com/");
   else location.replace("/");
 </script>
 </head>
